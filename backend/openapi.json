@@ -1,0 +1,941 @@
+{
+  "openapi": "3.0.0",
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "AppController_getHello",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "tags": [
+          "App"
+        ]
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "operationId": "login",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/LoginDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          },
+          "400": {
+            "description": "Validation error"
+          },
+          "401": {
+            "description": "Invalid credentials"
+          },
+          "429": {
+            "description": "Too many attempts"
+          }
+        },
+        "summary": "Sign in with username and password",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/auth/me": {
+      "get": {
+        "operationId": "getCurrentUser",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": "Authenticated user"
+          },
+          "401": {
+            "description": "Invalid session"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Get the authenticated user",
+        "tags": [
+          "auth"
+        ]
+      }
+    },
+    "/settings/system": {
+      "get": {
+        "operationId": "getSystemSettings",
+        "parameters": [],
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "summary": "Get public system settings",
+        "tags": [
+          "settings"
+        ]
+      },
+      "put": {
+        "operationId": "updateSystemSettings",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateSettingsDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": ""
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "Update company and website settings",
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/settings/users": {
+      "get": {
+        "operationId": "getUsersSettings",
+        "parameters": [
+          {
+            "name": "search",
+            "required": false,
+            "in": "query",
+            "description": "คำค้นหา (ชื่อ, ชื่อเล่น, email, เบอร์โทร, เลขบัตรประชาชน, username)",
+            "schema": {
+              "maxLength": 100,
+              "type": "string"
+            }
+          },
+          {
+            "name": "role",
+            "required": false,
+            "in": "query",
+            "description": "กรองตามบทบาทผู้ใช้ (SUPER_ADMIN, ADMIN, SALES, ESTIMATOR)",
+            "schema": {
+              "type": "string",
+              "enum": [
+                "SUPER_ADMIN",
+                "ADMIN",
+                "SALES",
+                "ESTIMATOR"
+              ]
+            }
+          },
+          {
+            "name": "page",
+            "required": false,
+            "in": "query",
+            "description": "หน้าปัจจุบัน",
+            "schema": {
+              "default": 1,
+              "type": "number"
+            }
+          },
+          {
+            "name": "limit",
+            "required": false,
+            "in": "query",
+            "description": "จำนวนรายการต่อหน้า",
+            "schema": {
+              "default": 10,
+              "type": "number"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ดึงรายการข้อมูลผู้ใช้งานสำเร็จ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserListApiResponse"
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "ไม่มีสิทธิ์เข้าถึง (Unauthorized)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "ดึงรายการข้อมูลผู้ใช้งานทั้งหมด พร้อมค้นหาและแบ่งหน้า (Get user list)",
+        "tags": [
+          "settings"
+        ]
+      },
+      "post": {
+        "operationId": "createUserSettings",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/CreateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "สร้างผู้ใช้งานสำเร็จ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserItemApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ข้อมูลไม่ถูกต้อง (Validation error)"
+          },
+          "409": {
+            "description": "ชื่อผู้ใช้งานซ้ำในระบบ (Conflict)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "สร้างผู้ใช้งานใหม่ (Create user)",
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/settings/users/{id}": {
+      "get": {
+        "operationId": "getUserSettingsById",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ดึงข้อมูลผู้ใช้งานสำเร็จ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserItemApiResponse"
+                }
+              }
+            }
+          },
+          "404": {
+            "description": "ไม่พบผู้ใช้งาน (Not Found)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "ดึงข้อมูลผู้ใช้งานตาม ID (Get user by ID)",
+        "tags": [
+          "settings"
+        ]
+      },
+      "put": {
+        "operationId": "updateUserSettings",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UpdateUserDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "แก้ไขข้อมูลผู้ใช้งานสำเร็จ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserItemApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ข้อมูลไม่ถูกต้อง (Validation error)"
+          },
+          "404": {
+            "description": "ไม่พบผู้ใช้งาน (Not Found)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "แก้ไขข้อมูลผู้ใช้งาน (Update user)",
+        "tags": [
+          "settings"
+        ]
+      },
+      "delete": {
+        "operationId": "deleteUserSettings",
+        "parameters": [
+          {
+            "name": "id",
+            "required": true,
+            "in": "path",
+            "description": "User UUID",
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "ลบผู้ใช้งานสำเร็จ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DeleteUserApiResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ไม่สามารถลบบัญชีตนเองได้ (Bad Request)"
+          },
+          "404": {
+            "description": "ไม่พบผู้ใช้งาน (Not Found)"
+          }
+        },
+        "security": [
+          {
+            "bearer": []
+          }
+        ],
+        "summary": "ลบผู้ใช้งาน (Delete user)",
+        "tags": [
+          "settings"
+        ]
+      }
+    },
+    "/upload": {
+      "post": {
+        "description": "อัปโหลดรูปภาพสำหรับไอคอนเว็บไซต์หรือโลโก้ของระบบ รองรับขนาดสูงสุด 5MB",
+        "operationId": "uploadImage",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FileUploadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "อัปโหลดรูปภาพสำเร็จ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileUploadResponse"
+                }
+              }
+            }
+          },
+          "400": {
+            "description": "ไฟล์ไม่ถูกต้องหรือไม่ตรงตามเงื่อนไข (ขนาดเกิน 5MB หรือชนิดไฟล์ไม่ถูกต้อง)"
+          }
+        },
+        "summary": "อัปโหลดรูปภาพ (Upload Image: PNG, JPG, SVG, WebP, ICO)",
+        "tags": [
+          "upload"
+        ]
+      }
+    },
+    "/upload/image": {
+      "post": {
+        "operationId": "uploadImageAlias",
+        "parameters": [],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "$ref": "#/components/schemas/FileUploadDto"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "อัปโหลดรูปภาพสำเร็จ",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/FileUploadResponse"
+                }
+              }
+            }
+          }
+        },
+        "summary": "อัปโหลดรูปภาพ (Alias: /upload/image)",
+        "tags": [
+          "upload"
+        ]
+      }
+    }
+  },
+  "info": {
+    "title": "SGQ API",
+    "description": "SGQ API สำหรับ Authentication และการตั้งค่าระบบ",
+    "version": "1.0.0",
+    "contact": {}
+  },
+  "tags": [],
+  "servers": [],
+  "components": {
+    "securitySchemes": {
+      "bearer": {
+        "scheme": "bearer",
+        "bearerFormat": "JWT",
+        "type": "http"
+      }
+    },
+    "schemas": {
+      "LoginDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "admin",
+            "default": "admin",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9_.-]+$"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "SgqAdmin!2026Neon#7",
+            "default": "SgqAdmin!2026Neon#7",
+            "minLength": 12,
+            "maxLength": 128
+          }
+        },
+        "required": [
+          "username",
+          "password"
+        ]
+      },
+      "UpdateSettingsDto": {
+        "type": "object",
+        "properties": {
+          "siteName": {
+            "type": "string"
+          },
+          "siteDescription": {
+            "type": "string"
+          },
+          "iconUrl": {
+            "type": "object"
+          },
+          "address": {
+            "type": "string"
+          },
+          "taxId": {
+            "type": "string"
+          },
+          "companyName": {
+            "type": "string"
+          },
+          "website": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "phone": {
+            "type": "string"
+          }
+        }
+      },
+      "UserItemResponse": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          },
+          "username": {
+            "type": "string",
+            "example": "somchai_k"
+          },
+          "role": {
+            "type": "string",
+            "example": "ADMIN",
+            "enum": [
+              "SUPER_ADMIN",
+              "ADMIN",
+              "SALES",
+              "ESTIMATOR"
+            ]
+          },
+          "fullName": {
+            "type": "object",
+            "example": "สมชาย เข็มกลัด",
+            "nullable": true
+          },
+          "nickname": {
+            "type": "object",
+            "example": "เต๋า",
+            "nullable": true
+          },
+          "phone": {
+            "type": "object",
+            "example": "0812345678",
+            "nullable": true
+          },
+          "email": {
+            "type": "object",
+            "example": "somchai@example.com",
+            "nullable": true
+          },
+          "citizenId": {
+            "type": "object",
+            "example": "1100400123456",
+            "nullable": true
+          },
+          "createdAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-19T08:19:33.747Z"
+          },
+          "updatedAt": {
+            "format": "date-time",
+            "type": "string",
+            "example": "2026-09-19T08:19:33.747Z"
+          }
+        },
+        "required": [
+          "id",
+          "username",
+          "role",
+          "fullName",
+          "nickname",
+          "phone",
+          "email",
+          "citizenId",
+          "createdAt",
+          "updatedAt"
+        ]
+      },
+      "UserListResponse": {
+        "type": "object",
+        "properties": {
+          "items": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/UserItemResponse"
+            }
+          },
+          "total": {
+            "type": "number",
+            "example": 1
+          },
+          "page": {
+            "type": "number",
+            "example": 1
+          },
+          "limit": {
+            "type": "number",
+            "example": 10
+          },
+          "totalPages": {
+            "type": "number",
+            "example": 1
+          }
+        },
+        "required": [
+          "items",
+          "total",
+          "page",
+          "limit",
+          "totalPages"
+        ]
+      },
+      "UserListApiResponse": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "example": 200
+          },
+          "error": {
+            "type": "string",
+            "nullable": true,
+            "example": null
+          },
+          "message_code": {
+            "type": "string",
+            "example": ""
+          },
+          "message": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "example": {}
+          },
+          "data": {
+            "$ref": "#/components/schemas/UserListResponse"
+          }
+        },
+        "required": [
+          "statusCode",
+          "error",
+          "message_code",
+          "message",
+          "metadata",
+          "data"
+        ]
+      },
+      "UserItemApiResponse": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "example": 200
+          },
+          "error": {
+            "type": "string",
+            "nullable": true,
+            "example": null
+          },
+          "message_code": {
+            "type": "string",
+            "example": ""
+          },
+          "message": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "example": {}
+          },
+          "data": {
+            "$ref": "#/components/schemas/UserItemResponse"
+          }
+        },
+        "required": [
+          "statusCode",
+          "error",
+          "message_code",
+          "message",
+          "metadata",
+          "data"
+        ]
+      },
+      "CreateUserDto": {
+        "type": "object",
+        "properties": {
+          "username": {
+            "type": "string",
+            "example": "somchai_k",
+            "description": "ชื่อบัญชีผู้ใช้ (ตัวพิมพ์เล็ก ตัวเลข _ . -)",
+            "minLength": 3,
+            "maxLength": 64,
+            "pattern": "^[a-z0-9_.-]+$"
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "Password!2026Secure",
+            "description": "รหัสผ่านผู้ใช้งาน (12–128 ตัวอักษร)",
+            "minLength": 12,
+            "maxLength": 128
+          },
+          "role": {
+            "type": "string",
+            "example": "ADMIN",
+            "enum": [
+              "SUPER_ADMIN",
+              "ADMIN",
+              "SALES",
+              "ESTIMATOR"
+            ],
+            "description": "บทบาทของผู้ใช้งาน (SUPER_ADMIN, ADMIN, SALES, ESTIMATOR)"
+          },
+          "fullName": {
+            "type": "string",
+            "example": "สมชาย เข็มกลัด",
+            "description": "ชื่อเต็มของผู้ใช้งาน",
+            "maxLength": 160
+          },
+          "nickname": {
+            "type": "string",
+            "example": "เต๋า",
+            "description": "ชื่อเล่นของผู้ใช้งาน",
+            "maxLength": 64
+          },
+          "phone": {
+            "type": "string",
+            "example": "0812345678",
+            "description": "เบอร์โทรศัพท์ติดต่อ",
+            "maxLength": 40
+          },
+          "email": {
+            "type": "string",
+            "example": "somchai@example.com",
+            "description": "อีเมลของผู้ใช้งาน",
+            "maxLength": 160
+          },
+          "citizenId": {
+            "type": "string",
+            "example": "1100400123456",
+            "description": "เลขบัตรประจำตัวประชาชน (13 หลัก)",
+            "maxLength": 20
+          }
+        },
+        "required": [
+          "username",
+          "password",
+          "role"
+        ]
+      },
+      "UpdateUserDto": {
+        "type": "object",
+        "properties": {
+          "role": {
+            "type": "string",
+            "example": "ADMIN",
+            "enum": [
+              "SUPER_ADMIN",
+              "ADMIN",
+              "SALES",
+              "ESTIMATOR"
+            ],
+            "description": "บทบาทของผู้ใช้งาน"
+          },
+          "fullName": {
+            "type": "string",
+            "example": "สมชาย เข็มกลัด",
+            "description": "ชื่อเต็มของผู้ใช้งาน",
+            "maxLength": 160
+          },
+          "nickname": {
+            "type": "string",
+            "example": "เต๋า",
+            "description": "ชื่อเล่นของผู้ใช้งาน",
+            "maxLength": 64
+          },
+          "phone": {
+            "type": "string",
+            "example": "0812345678",
+            "description": "เบอร์โทรศัพท์ติดต่อ",
+            "maxLength": 40
+          },
+          "email": {
+            "type": "string",
+            "example": "somchai@example.com",
+            "description": "อีเมลของผู้ใช้งาน",
+            "maxLength": 160
+          },
+          "citizenId": {
+            "type": "string",
+            "example": "1100400123456",
+            "description": "เลขบัตรประจำตัวประชาชน",
+            "maxLength": 20
+          },
+          "password": {
+            "type": "string",
+            "format": "password",
+            "example": "NewPassword!2026Secure",
+            "description": "รหัสผ่านใหม่ (หากต้องการเปลี่ยน 12–128 ตัวอักษร)",
+            "minLength": 12,
+            "maxLength": 128
+          }
+        }
+      },
+      "DeleteUserResponse": {
+        "type": "object",
+        "properties": {
+          "deleted": {
+            "type": "boolean",
+            "example": true
+          },
+          "id": {
+            "type": "string",
+            "format": "uuid",
+            "example": "a0eebc99-9c0b-4ef8-bb6d-6bb9bd380a11"
+          }
+        },
+        "required": [
+          "deleted",
+          "id"
+        ]
+      },
+      "DeleteUserApiResponse": {
+        "type": "object",
+        "properties": {
+          "statusCode": {
+            "type": "number",
+            "example": 200
+          },
+          "error": {
+            "type": "string",
+            "nullable": true,
+            "example": null
+          },
+          "message_code": {
+            "type": "string",
+            "example": ""
+          },
+          "message": {
+            "oneOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              }
+            ]
+          },
+          "metadata": {
+            "type": "object",
+            "additionalProperties": true,
+            "example": {}
+          },
+          "data": {
+            "$ref": "#/components/schemas/DeleteUserResponse"
+          }
+        },
+        "required": [
+          "statusCode",
+          "error",
+          "message_code",
+          "message",
+          "metadata",
+          "data"
+        ]
+      },
+      "FileUploadDto": {
+        "type": "object",
+        "properties": {
+          "file": {
+            "type": "string",
+            "format": "binary",
+            "description": "ไฟล์รูปภาพ (รองรับ PNG, JPG, JPEG, SVG, WebP, ICO ขนาดสูงสุด 5MB)"
+          }
+        },
+        "required": [
+          "file"
+        ]
+      },
+      "FileUploadResponse": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string",
+            "example": "/uploads/site-icon-1789822204284-aazrhb.webp",
+            "description": "URL ของรูปภาพที่สามารถนำไปใช้งานได้"
+          },
+          "filename": {
+            "type": "string",
+            "example": "site-icon-1789822204284-aazrhb.webp",
+            "description": "ชื่อไฟล์รูปภาพ"
+          },
+          "size": {
+            "type": "number",
+            "example": 45678,
+            "description": "ขนาดไฟล์ (bytes)"
+          },
+          "mimetype": {
+            "type": "string",
+            "example": "image/webp",
+            "description": "ประเภท MIME ของไฟล์"
+          }
+        },
+        "required": [
+          "url",
+          "filename",
+          "size",
+          "mimetype"
+        ]
+      }
+    }
+  }
+}

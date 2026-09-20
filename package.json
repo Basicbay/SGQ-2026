@@ -1,0 +1,33 @@
+{
+  "name": "my-app",
+  "version": "0.1.0",
+  "private": true,
+  "workspaces": [
+    "frontend",
+    "backend"
+  ],
+  "engines": {
+    "node": ">=22.16.0",
+    "npm": ">=10"
+  },
+  "packageManager": "npm@10.9.8",
+  "scripts": {
+    "dev": "concurrently --kill-others --names web,api \"npm run dev:frontend\" \"npm run dev:backend\"",
+    "dev:frontend": "npm run dev --workspace frontend",
+    "dev:backend": "npm run start:dev --workspace backend",
+    "build": "npm run build --workspaces",
+    "lint": "npm run lint --workspaces",
+    "typecheck:backend": "npm run typecheck --workspace backend",
+    "test": "npm run test --workspace backend",
+    "test:e2e": "npm run test:e2e --workspace backend",
+    "start:frontend": "npm run start --workspace frontend",
+    "start:backend": "npm run start:prod --workspace backend"
+  },
+  "devDependencies": {
+    "concurrently": "^9.2.1"
+  },
+  "dependencies": {
+    "@neon/config": "^1.7.2",
+    "@neon/env": "^1.4.3"
+  }
+}
