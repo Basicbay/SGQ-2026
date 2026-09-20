@@ -23,15 +23,29 @@ These rules apply to `frontend` and extend the root `AGENTS.md`.
 - React Hook Form and Zod
 - Zustand for shared client-only state
 
+## TanStack Query
+
+- Use TanStack Query for server state with domain-shaped query keys and colocated query functions.
+- Use optimistic mutations when safe and perform targeted cache updates or invalidation after writes.
+- Handle loading, error, empty, background-refetch, and stale-data states.
+- Never duplicate server data in Zustand or other client-state stores.
+
+## TanStack Table
+
+- Use TanStack Table as a headless data-grid foundation and enable only the features required by the product.
+- Keep table configuration stable and use the installed version's supported state and reactive APIs.
+- Render semantic table elements and handle loading, error, empty, and updating states.
+- Synchronize pagination, sorting, filtering, or selection with the URL or server only when required.
+- Never duplicate table state in global stores unless the application must own that state externally.
+
 ## Skill Routing
 
-- New pages and major UI redesigns → `frontend-design` (globally installed).
-- React and Next.js implementation → `vercel-react-best-practices` (globally installed).
-- Reusable component architecture → `vercel-composition-patterns` (globally installed).
-- Responsive, accessibility, and UX review → `web-design-guidelines` (globally installed).
-- Final visual refinement → `polish` (globally installed).
-- Token and context optimization → `caveman` (globally installed).
-- Search for additional skills → use `find-skills` (globally installed).
+- New pages and major UI redesigns → `.agents/skills/frontend-design`.
+- React and Next.js implementation → `.agents/skills/vercel-react-best-practices`.
+- Reusable component architecture → `.agents/skills/vercel-composition-patterns`.
+- Responsive, accessibility, and UX review → `.agents/skills/web-design-guidelines`.
+- Search for additional skills → use `.agents/skills/find-skills`.
+- Token and context optimization → `caveman`.
 - Automatically use relevant installed skills when the task matches.
 - Read each selected skill's `SKILL.md` completely before making changes.
 

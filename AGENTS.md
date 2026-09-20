@@ -29,3 +29,4 @@ Follow instructions in this order:
 ```text
 backend/                  # NestJS backend
 frontend/                 # Next.js frontend
+```

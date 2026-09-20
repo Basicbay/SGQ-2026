@@ -15,7 +15,7 @@ These rules apply to `backend` and extend the root `AGENTS.md`.
 
 ## Skill Routing
 
-- Token and context optimization → `caveman` (globally installed); read its `SKILL.md` before use.
+- Token and context optimization → `caveman`.
 
 ## Architecture
 
@@ -38,6 +38,7 @@ These rules apply to `backend` and extend the root `AGENTS.md`.
     "data": {},
     "metadata": {}
   }
+  ```
 
 ## API Contract
 
