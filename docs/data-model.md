@@ -80,3 +80,91 @@
 | `note` | `text` | ได้ (YES) | `NULL` | บันทึกหมายเหตุเพิ่มเติม |
 | `created_at` | `timestamptz` | ไม่ว่าง (NO) | `now()` | วันที่และเวลาที่สร้างข้อมูล |
 | `updated_at` | `timestamptz` | ไม่ว่าง (NO) | `now()` | วันที่และเวลาที่อัปเดตล่าสุด |
+
+## ตารางข้อมูลสินค้าและวัสดุ (`products`)
+
+ตารางจัดเก็บข้อมูลสินค้า วัสดุก่อสร้าง อุปกรณ์ และค่าแรง สำหรับนำไปใช้จัดทำใบเสนอราคา (Quotation) และคำนวณต้นทุนโครงการ
+
+| คอลัมน์ (Column) | ชนิดข้อมูล (Data Type) | Nullable | Default | คำอธิบาย |
+|---|---|---|---|---|
+| `id` | `uuid` | ไม่ว่าง (NO) | `gen_random_uuid()` | Primary Key รหัสสินค้าภายในระบบ |
+| `product_code` | `varchar(32)` | ไม่ว่าง (NO) | - | รหัสสินค้าอ้างอิง (Unique, เช่น `PRD-2026-0001`) |
+| `name` | `varchar(200)` | ไม่ว่าง (NO) | - | ชื่อสินค้า วัสดุ หรือบริการ |
+| `category` | `varchar(50)` | ไม่ว่าง (NO) | `'CONSTRUCTION'` | หมวดหมู่สินค้า (`CONSTRUCTION`, `INTERIOR`, `STRUCTURAL`, `ELECTRICAL`, `PLUMBING`, `PAINT_COATING`, `ROOFING_INSULATION`, `DOOR_WINDOW`, `OTHER`) |
+| `brand` | `varchar(100)` | ได้ (YES) | `NULL` | ยี่ห้อ / ตราสินค้า / ผู้ผลิต |
+| `color` | `varchar(60)` | ได้ (YES) | `NULL` | สี / ลวดลาย / รุ่น |
+| `unit` | `varchar(30)` | ไม่ว่าง (NO) | `'ชิ้น'` | หน่วยนับ (เช่น ถุง, ตร.ม., เมตร, ท่อน, ชุด, ชิ้น) |
+| `cost_price` | `numeric(12,2)` | ไม่ว่าง (NO) | `0` | ราคาต้นทุนต่อหน่วย (บาท) |
+| `selling_price` | `numeric(12,2)` | ไม่ว่าง (NO) | `0` | ราคาขายมาตรฐานต่อหน่วย (บาท) |
+| `stock_quantity` | `numeric(12,2)` | ไม่ว่าง (NO) | `0` | ปริมาณคงคลัง / ยอดสต็อก |
+| `stock_status` | `varchar(32)` | ไม่ว่าง (NO) | `'IN_STOCK'` | สถานะสต็อก (`IN_STOCK` มีสินค้า, `LOW_STOCK` ใกล้หมด, `OUT_OF_STOCK` หมด, `ORDER_ON_DEMAND` สั่งพิเศษ) |
+| `status` | `varchar(32)` | ไม่ว่าง (NO) | `'ACTIVE'` | สถานะสินค้า (`ACTIVE` ใช้งาน, `INACTIVE` ระงับจำหน่าย) |
+| `image_url` | `text` | ได้ (YES) | `NULL` | URL รูปภาพสินค้า |
+| `description` | `text` | ได้ (YES) | `NULL` | รายละเอียดสเปกและคุณสมบัติสินค้า |
+| `note` | `text` | ได้ (YES) | `NULL` | บันทึกหมายเหตุเพิ่มเติม |
+| `created_at` | `timestamptz` | ไม่ว่าง (NO) | `now()` | วันที่และเวลาที่สร้างข้อมูล |
+| `updated_at` | `timestamptz` | ไม่ว่าง (NO) | `now()` | วันที่และเวลาที่อัปเดตล่าสุด |
+
+## ตารางข้อมูลใบเสนอราคา (`quotations`)
+
+ตารางจัดเก็บข้อมูลเอกสารใบเสนอราคา (Quotation Header) สำหรับเสนอราคาลูกค้า พร้อมบันทึก Snapshot รายละเอียดลูกค้าและโครงการ ณ เวลาที่ออกเอกสาร เพื่อป้องกันข้อมูลเดิมเปลี่ยนแปลงตามข้อมูลปัจจุบัน (อ้างอิงตาม `PROJECT.md`)
+
+| คอลัมน์ (Column) | ชนิดข้อมูล (Data Type) | Nullable | Default | คำอธิบาย |
+|---|---|---|---|---|
+| `id` | `uuid` | ไม่ว่าง (NO) | `gen_random_uuid()` | Primary Key รหัสใบเสนอราคาภายในระบบ |
+| `quotation_number` | `varchar(32)` | ไม่ว่าง (NO) | - | เลขที่เอกสารใบเสนอราคา (Unique, เช่น `QT-2026-0001`) |
+| `customer_id` | `uuid` | ไม่ว่าง (NO) | - | Foreign Key อ้างอิงไปยัง `customers(id)` (ON DELETE RESTRICT) |
+| `project_id` | `uuid` | ได้ (YES) | `NULL` | Foreign Key อ้างอิงไปยัง `projects(id)` (ON DELETE SET NULL) |
+| `seller_id` | `uuid` | ได้ (YES) | `NULL` | Foreign Key อ้างอิงไปยัง `users(id)` ผู้จัดทำใบเสนอราคา |
+| `approved_by_id` | `uuid` | ได้ (YES) | `NULL` | Foreign Key อ้างอิงไปยัง `users(id)` ผู้อนุมัติใบเสนอราคา |
+| `status` | `varchar(32)` | ไม่ว่าง (NO) | `'DRAFT'` | สถานะใบเสนอราคา (`DRAFT`, `PENDING_REVIEW`, `PENDING_APPROVAL`, `APPROVED`, `SENT`, `ACCEPTED`, `REJECTED`, `EXPIRED`, `CANCELLED`) |
+| `issue_date` | `date` | ไม่ว่าง (NO) | `CURRENT_DATE` | วันที่ออกเอกสารใบเสนอราคา (YYYY-MM-DD) |
+| `valid_until` | `date` | ไม่ว่าง (NO) | `CURRENT_DATE + 30 days` | วันที่หมดอายุการยืนราคา (YYYY-MM-DD) |
+| `valid_days` | `integer` | ไม่ว่าง (NO) | `30` | จำนวนวันยืนราคา (วัน) |
+| `customer_name` | `varchar(200)` | ไม่ว่าง (NO) | - | Snapshot ชื่อลูกค้า ณ เวลาออกเอกสาร |
+| `customer_address` | `text` | ได้ (YES) | `NULL` | Snapshot ที่อยู่ออกเอกสาร |
+| `customer_phone` | `varchar(40)` | ได้ (YES) | `NULL` | Snapshot เบอร์โทรศัพท์ติดต่อ |
+| `customer_tax_id` | `varchar(32)` | ได้ (YES) | `NULL` | Snapshot เลขประจำตัวผู้เสียภาษี |
+| `customer_contact` | `varchar(160)` | ได้ (YES) | `NULL` | Snapshot ชื่อผู้ติดต่อ |
+| `project_name` | `varchar(200)` | ได้ (YES) | `NULL` | Snapshot ชื่อโครงการก่อสร้าง |
+| `subtotal` | `numeric(15,2)` | ไม่ว่าง (NO) | `0` | ยอดรวมก่อนส่วนลด (บาท) |
+| `discount_type` | `varchar(20)` | ไม่ว่าง (NO) | `'AMOUNT'` | ประเภทส่วนลดรวม (`AMOUNT` บาท, `PERCENT` %) |
+| `discount_rate` | `numeric(8,2)` | ไม่ว่าง (NO) | `0` | อัตราส่วนลดหรือจำนวนเงินส่วนลด |
+| `discount_amount` | `numeric(15,2)` | ไม่ว่าง (NO) | `0` | มูลค่าส่วนลดรวมที่คำนวณได้ (บาท) |
+| `total_after_discount` | `numeric(15,2)` | ไม่ว่าง (NO) | `0` | ยอดรวมหลังหักส่วนลด (บาท) |
+| `vat_rate` | `numeric(5,2)` | ไม่ว่าง (NO) | `7.00` | อัตราภาษีมูลค่าเพิ่ม (%, ปกติ 7.00% หรือ 0% กรณีไม่คิดภาษี) |
+| `vat_amount` | `numeric(15,2)` | ไม่ว่าง (NO) | `0` | ภาษีมูลค่าเพิ่ม (บาท) |
+| `grand_total` | `numeric(15,2)` | ไม่ว่าง (NO) | `0` | ยอดสุทธิรวมภาษีทั้งสิ้น (บาท) |
+| `total_cost` | `numeric(15,2)` | ไม่ว่าง (NO) | `0` | ยอดรวมต้นทุนสินค้าและบริการทั้งหมด (บาท) |
+| `estimated_profit` | `numeric(15,2)` | ไม่ว่าง (NO) | `0` | ประมาณการกำไรขั้นต้น (บาท) |
+| `profit_margin_percent` | `numeric(8,2)` | ไม่ว่าง (NO) | `0` | อัตรากำไรขั้นต้น (%) |
+| `payment_terms` | `text` | ได้ (YES) | `NULL` | เงื่อนไขการชำระเงิน |
+| `delivery_terms` | `text` | ได้ (YES) | `NULL` | กำหนดการส่งมอบและติดตั้ง |
+| `warranty_terms` | `text` | ได้ (YES) | `NULL` | เงื่อนไขการรับประกันผลงานและวัสดุ |
+| `notes` | `text` | ได้ (YES) | `NULL` | บันทึกหมายเหตุเพิ่มเติมในใบเสนอราคา |
+| `rejection_reason` | `text` | ได้ (YES) | `NULL` | เหตุผลกรณีปฏิเสธหรือยกเลิกใบเสนอราคา |
+| `created_at` | `timestamptz` | ไม่ว่าง (NO) | `now()` | วันที่และเวลาที่สร้างข้อมูล |
+| `updated_at` | `timestamptz` | ไม่ว่าง (NO) | `now()` | วันที่และเวลาที่อัปเดตล่าสุด |
+
+## ตารางรายการสินค้าในใบเสนอราคา (`quotation_items`)
+
+ตารางจัดเก็บรายการสินค้า วัสดุ บริการติดตั้ง และค่าแรงในแต่ละใบเสนอราคา (Quotation Line Items) โดยบันทึก Snapshot ราคาขายและต้นทุน ณ เวลาออกเอกสาร
+
+| คอลัมน์ (Column) | ชนิดข้อมูล (Data Type) | Nullable | Default | คำอธิบาย |
+|---|---|---|---|---|
+| `id` | `uuid` | ไม่ว่าง (NO) | `gen_random_uuid()` | Primary Key รหัสรายการภายในระบบ |
+| `quotation_id` | `uuid` | ไม่ว่าง (NO) | - | Foreign Key อ้างอิงไปยัง `quotations(id)` (ON DELETE CASCADE) |
+| `product_id` | `uuid` | ได้ (YES) | `NULL` | Foreign Key อ้างอิงไปยัง `products(id)` ในคลัง (ON DELETE SET NULL) |
+| `item_type` | `varchar(32)` | ไม่ว่าง (NO) | `'PRODUCT'` | ประเภทรายการ (`PRODUCT`, `SERVICE`, `CUSTOM`, `LABOR`) |
+| `item_code` | `varchar(50)` | ได้ (YES) | `NULL` | รหัสสินค้าอ้างอิง ณ เวลาออกเอกสาร |
+| `item_name` | `varchar(250)` | ไม่ว่าง (NO) | - | ชื่อรายการสินค้า วัสดุ หรือบริการ |
+| `description` | `text` | ได้ (YES) | `NULL` | สเปก ขนาด สี หรือรายละเอียดจำเพาะ |
+| `quantity` | `numeric(12,2)` | ไม่ว่าง (NO) | `1` | จำนวนสินค้า |
+| `unit` | `varchar(32)` | ไม่ว่าง (NO) | `'ชิ้น'` | หน่วยนับ (เช่น เส้น, ชุด, ตร.ม., ชิ้น, งาน) |
+| `unit_cost` | `numeric(15,2)` | ไม่ว่าง (NO) | `0` | Snapshot ราคาต้นทุนต่อหน่วย (บาท) |
+| `unit_price` | `numeric(15,2)` | ไม่ว่าง (NO) | `0` | Snapshot ราคาจำหน่ายต่อหน่วย (บาท) |
+| `discount_amount` | `numeric(15,2)` | ไม่ว่าง (NO) | `0` | ส่วนลดต่อรายการ (บาท) |
+| `line_total` | `numeric(15,2)` | ไม่ว่าง (NO) | `0` | ยอดรวมของรายการ `(quantity * unit_price) - discount_amount` |
+| `sort_order` | `integer` | ไม่ว่าง (NO) | `0` | ลำดับการแสดงผลในเอกสาร |
+| `created_at` | `timestamptz` | ไม่ว่าง (NO) | `now()` | วันที่และเวลาที่สร้างข้อมูล |
+| `updated_at` | `timestamptz` | ไม่ว่าง (NO) | `now()` | วันที่และเวลาที่อัปเดตล่าสุด |

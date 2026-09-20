@@ -1546,7 +1546,7 @@ export function UserSettingsView({
                       สถานะการใช้งาน (Status)
                     </label>
                     {selectedUser?.username.toLowerCase() === "admin" && (
-                      <span className="text-[11px] text-muted-foreground font-medium">
+                      <span className="text-xs text-muted-foreground font-medium">
                         ไม่สามารถระงับการใช้งาน admin ได้
                       </span>
                     )}
@@ -1591,7 +1591,7 @@ export function UserSettingsView({
                     >
                       ชื่อผู้ใช้ (Username)
                     </label>
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-xs text-muted-foreground">
                       ไม่สามารถแก้ไขได้
                     </span>
                   </div>

@@ -12,6 +12,9 @@ import { SettingsModule } from './settings/settings.module.js';
 import { UploadModule } from './upload/upload.module.js';
 import { CustomersModule } from './customers/customers.module.js';
 import { ProjectsModule } from './projects/projects.module.js';
+import { ProductsModule } from './products/products.module.js';
+import { QuotationsModule } from './quotations/quotations.module.js';
+import { DashboardModule } from './dashboard/dashboard.module.js';
 
 export const { ObserveModule, ObserveInstrument } = createObserveModule();
 
@@ -44,6 +47,9 @@ export const { ObserveModule, ObserveInstrument } = createObserveModule();
     UploadModule,
     CustomersModule,
     ProjectsModule,
+    ProductsModule,
+    QuotationsModule,
+    DashboardModule,
     // Distributed tracing, auto-correlated logs, request/job metrics, error
     // telemetry, alarms, and more — out of the box. Sign up at https://observe.nestjs.com
     ObserveModule.forRoot({

@@ -124,6 +124,45 @@
 - `description` (string, รายละเอียดขอบเขตงาน)
 - `note` (string, หมายเหตุเพิ่มเติม)
 
+## หมวดข้อมูลสินค้าและวัสดุ (Swagger Section: `products`)
+
+| Method | Endpoint | คำอธิบาย | สิทธิ์ (Auth) |
+|---|---|---|---|
+| `GET` | `/products` | ดึงรายการข้อมูลสินค้าและวัสดุทั้งหมด (รองรับ ค้นหา, กรองหมวดหมู่/สต็อก/สถานะ, แบ่งหน้า) | Bearer JWT |
+| `GET` | `/products/:id` | ดึงข้อมูลสินค้ารายชิ้นตาม ID | Bearer JWT |
+| `POST` | `/products` | สร้างข้อมูลสินค้าใหม่ (รหัสจะถูกสร้างให้อัตโนมัติหากเว้นว่าง เช่น `PRD-2026-0001`) | Bearer JWT |
+| `PUT` | `/products/:id` | แก้ไขข้อมูลสินค้าและวัสดุ | Bearer JWT |
+| `DELETE` | `/products/:id` | ลบข้อมูลสินค้าและวัสดุ | Bearer JWT |
+| `GET` | `/api/products` | Next.js API Route พร็อกซีดึงรายการสินค้า | Bearer JWT / NextAuth |
+| `POST` | `/api/products` | Next.js API Route พร็อกซีสร้างสินค้าใหม่ | Bearer JWT / NextAuth |
+| `GET` | `/api/products/:id` | Next.js API Route พร็อกซีดึงสินค้ารายชิ้น | Bearer JWT / NextAuth |
+| `PUT` | `/api/products/:id` | Next.js API Route พร็อกซีแก้ไขข้อมูลสินค้า | Bearer JWT / NextAuth |
+| `DELETE` | `/api/products/:id` | Next.js API Route พร็อกซีลบข้อมูลสินค้า | Bearer JWT / NextAuth |
+
+### พารามิเตอร์ Query ของ `GET /products`:
+- `search` (string, max 100): ค้นหารหัสสินค้า, ชื่อสินค้า, ยี่ห้อ/แบรนด์, สี, รายละเอียดสเปก
+- `category` (string): กรองตามหมวดหมู่ (`CONSTRUCTION`, `INTERIOR`, `STRUCTURAL`, `ELECTRICAL`, `PLUMBING`, `PAINT_COATING`, `ROOFING_INSULATION`, `DOOR_WINDOW`, `OTHER`)
+- `stockStatus` (string): กรองตามสถานะสต็อก (`IN_STOCK`, `LOW_STOCK`, `OUT_OF_STOCK`, `ORDER_ON_DEMAND`)
+- `status` (string): กรองตามสถานะสินค้า (`ACTIVE`, `INACTIVE`)
+- `page` (number, default 1): ลำดับหน้า
+- `limit` (number, default 10, max 100): จำนวนรายการต่อหน้า
+
+### ฟิลด์ข้อมูลของ `POST /products`:
+- `productCode` (string, 3–32 ตัวอักษร, อักขระ `^[a-zA-Z0-9_.-]+$`, ระบบสร้างอัตโนมัติหากเว้นว่าง)
+- `name` (string, 1–200 ตัวอักษร) *จำเป็น
+- `category` (enum: `CONSTRUCTION`, `INTERIOR`, `STRUCTURAL`, `ELECTRICAL`, `PLUMBING`, `PAINT_COATING`, `ROOFING_INSULATION`, `DOOR_WINDOW`, `OTHER`, default `CONSTRUCTION`)
+- `brand` (string, สูงสุด 100 ตัวอักษร)
+- `color` (string, สูงสุด 60 ตัวอักษร)
+- `unit` (string, สูงสุด 30 ตัวอักษร, default `'ชิ้น'`) *จำเป็น
+- `costPrice` (number, ไม่น้อยกว่า 0, default 0)
+- `sellingPrice` (number, ไม่น้อยกว่า 0, default 0)
+- `stockQuantity` (number, ไม่น้อยกว่า 0, default 0)
+- `stockStatus` (enum: `IN_STOCK`, `LOW_STOCK`, `OUT_OF_STOCK`, `ORDER_ON_DEMAND`, default `IN_STOCK`)
+- `status` (enum: `ACTIVE`, `INACTIVE`, default `ACTIVE`)
+- `imageUrl` (string, รูปแบบ URL หรือ path ของรูปภาพ)
+- `description` (string, รายละเอียดคุณลักษณะสินค้า)
+- `note` (string, บันทึกหมายเหตุเพิ่มเติม)
+
 ## หมวดอัปโหลดและจัดการไฟล์รูปภาพ (Swagger Section: `upload`)
 
 ระบบใช้ MinIO / S3-Compatible Object Storage ในการจัดเก็บไฟล์รูปภาพ และให้บริการดึงรูปภาพผ่าน API สตรีมตรง ไม่บันทึกลง local directory ของ frontend หรือโปรเจกต์
@@ -150,5 +189,128 @@
     "mimetype": "image/webp"
   },
   "metadata": {}
+}
+```
+
+## หมวดข้อมูลใบเสนอราคา (Swagger Section: `quotations`)
+
+| Method | Endpoint | คำอธิบาย | สิทธิ์ (Auth) |
+|---|---|---|---|
+| `GET` | `/quotations` | ดึงรายการใบเสนอราคาทั้งหมด (รองรับ ค้นหา, กรองสถานะ/ลูกค้า/โครงการ/ช่วงวันที่, สถิติสรุปยอดรวม, แบ่งหน้า) | Bearer JWT |
+| `GET` | `/quotations/:id` | ดึงรายละเอียดใบเสนอราคาและรายการสินค้าทั้งหมด (รวมข้อมูลลูกค้าและโครงการ Snapshot) | Bearer JWT |
+| `POST` | `/quotations` | สร้างใบเสนอราคาใหม่ (ระบบออกเลขที่ `QT-YYYY-XXXX` อัตโนมัติหากเว้นว่าง, คำนวณยอดเงิน ส่วนลด และภาษี) | Bearer JWT |
+| `PUT` | `/quotations/:id` | แก้ไขข้อมูลใบเสนอราคาและรายการสินค้า (คำนวณยอดเงินและกำไรใหม่) | Bearer JWT |
+| `PATCH` | `/quotations/:id/status` | เปลี่ยนสถานะใบเสนอราคา เช่น อนุมัติ (APPROVED), ส่งมอบ (SENT), ลูกค้ายอมรับ (ACCEPTED), ปฏิเสธ (REJECTED) | Bearer JWT |
+| `DELETE` | `/quotations/:id` | ลบใบเสนอราคา (สงวนสำหรับสถานะ DRAFT / CANCELLED หรือบทบาทผู้ดูแลระบบ) | Bearer JWT |
+| `GET` | `/api/quotations` | Next.js API Route พร็อกซีดึงรายการใบเสนอราคา | Bearer JWT / NextAuth |
+| `POST` | `/api/quotations` | Next.js API Route พร็อกซีสร้างใบเสนอราคาใหม่ | Bearer JWT / NextAuth |
+| `GET` | `/api/quotations/:id` | Next.js API Route พร็อกซีดึงรายละเอียดใบเสนอราคา | Bearer JWT / NextAuth |
+| `PUT` | `/api/quotations/:id` | Next.js API Route พร็อกซีแก้ไขข้อมูลใบเสนอราคา | Bearer JWT / NextAuth |
+| `PATCH` | `/api/quotations/:id/status` | Next.js API Route พร็อกซีเปลี่ยนสถานะใบเสนอราคา | Bearer JWT / NextAuth |
+| `DELETE` | `/api/quotations/:id` | Next.js API Route พร็อกซีลบใบเสนอราคา | Bearer JWT / NextAuth |
+
+### พารามิเตอร์ Query ของ `GET /quotations`:
+- `search` (string, max 100): ค้นหาเลขที่เอกสาร, ชื่อลูกค้า, ชื่อโครงการ
+- `status` (string): กรองตามสถานะ (`DRAFT`, `PENDING_REVIEW`, `PENDING_APPROVAL`, `APPROVED`, `SENT`, `ACCEPTED`, `REJECTED`, `EXPIRED`, `CANCELLED`)
+- `customerId` (uuid): กรองตามรหัสลูกค้า
+- `projectId` (uuid): กรองตามรหัสโครงการ
+- `startDate` (string, YYYY-MM-DD): วันที่ออกเอกสารเริ่มต้น
+- `endDate` (string, YYYY-MM-DD): วันที่ออกเอกสารถึง
+- `page` (number, default 1): ลำดับหน้า
+- `limit` (number, default 10, max 100): จำนวนรายการต่อหน้า
+
+### ฟิลด์ข้อมูลของ `POST /quotations`:
+- `quotationNumber` (string, 3–32 ตัวอักษร, สร้างอัตโนมัติหากเว้นว่าง)
+- `customerId` (uuid) *จำเป็น
+- `projectId` (uuid, optional)
+- `issueDate` (string, YYYY-MM-DD, default วันที่ปัจจุบัน)
+- `validDays` (number, default 30)
+- `validUntil` (string, YYYY-MM-DD, auto คำนวณจาก `issueDate + validDays`)
+- `customerName` (string, optional - snapshot จากลูกค้า)
+- `customerAddress` (string, optional)
+- `customerPhone` (string, optional)
+- `customerTaxId` (string, optional)
+- `customerContact` (string, optional)
+- `projectName` (string, optional)
+- `discountType` (enum: `AMOUNT`, `PERCENT`, default `AMOUNT`)
+- `discountRate` (number, default 0)
+- `vatRate` (number, default 7.0)
+- `paymentTerms` (string, optional)
+- `deliveryTerms` (string, optional)
+- `warrantyTerms` (string, optional)
+- `notes` (string, optional)
+- `items` (array of items):
+  - `productId` (uuid, optional)
+  - `itemType` (enum: `PRODUCT`, `SERVICE`, `CUSTOM`, `LABOR`, default `PRODUCT`)
+  - `itemCode` (string, optional)
+  - `itemName` (string, 1–250 ตัวอักษร) *จำเป็น
+  - `description` (string, optional)
+  - `quantity` (number, > 0) *จำเป็น
+  - `unit` (string, default `'ชิ้น'`)
+  - `unitCost` (number, default 0)
+  - `unitPrice` (number, >= 0) *จำเป็น
+  - `discountAmount` (number, default 0)
+  - `sortOrder` (number, default 1)
+
+## หมวดภาพรวมและสถิติระบบ (Dashboard Overview)
+
+| Method | Endpoint | คำอธิบาย | สิทธิ์ (Auth) |
+|---|---|---|---|
+| `GET` | `/dashboard/overview` | สถิติภาพรวม มูลค่าใบเสนอราคา กราฟแนวโน้ม และรายการล่าสุดตามช่วงเวลาที่กำหนด | Bearer JWT |
+| `GET` | `/api/dashboard/overview` | Next.js API Route พร็อกซีดึงข้อมูลภาพรวมระบบ | Bearer JWT / NextAuth |
+
+### พารามิเตอร์ Query ของ `GET /dashboard/overview`:
+- `period` (string, optional, default `TODAY`): ช่วงเวลาที่ต้องการกรองข้อมูล
+  - `TODAY`: วันนี้ (Default)
+  - `YESTERDAY`: เมื่อวาน
+  - `THIS_WEEK`: สัปดาห์นี้
+  - `LAST_7_DAYS`: 7 วันล่าสุด
+  - `THIS_MONTH`: เดือนนี้
+  - `THIS_QUARTER`: ไตรมาสนี้
+  - `THIS_YEAR`: ปีนี้
+
+### ผลลัพธ์ที่ส่งกลับ (Response Format):
+```json
+{
+  "period": "TODAY",
+  "periodLabel": "วันนี้",
+  "summary": {
+    "totalValue": 1250000.00,
+    "totalValueFormatted": "฿1,250,000.00",
+    "previousPeriodValue": 1000000.00,
+    "valueChangePercent": "+25.0%",
+    "valueChangeTrend": "up",
+    "totalQuotations": 5,
+    "approvedCount": 3,
+    "pendingCount": 2,
+    "winRate": "60.0%",
+    "activeCustomers": 12,
+    "activeProjects": 8,
+    "totalProducts": 45
+  },
+  "trend": {
+    "period": "TODAY",
+    "dataPoints": [
+      { "label": "09:00", "value": 0 },
+      { "label": "12:00", "value": 500000 }
+    ],
+    "maxValue": 500000
+  },
+  "statusBreakdown": [
+    { "status": "APPROVED", "label": "อนุมัติแล้ว", "count": 3, "percentage": "60%", "color": "#10b981", "bgClass": "bg-emerald-500" }
+  ],
+  "recentQuotations": [
+    {
+      "id": "uuid",
+      "quotationNumber": "QT-2026-0001",
+      "customerName": "บริษัท ตัวอย่าง จำกัด",
+      "projectName": "โครงการคอนโดมิเนียม",
+      "totalAmount": 1250000.00,
+      "totalAmountFormatted": "฿1,250,000.00",
+      "status": "APPROVED",
+      "issueDate": "2026-09-20",
+      "updatedAt": "2026-09-20T10:00:00.000Z"
+    }
+  ]
 }
 ```

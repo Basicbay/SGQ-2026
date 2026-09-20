@@ -11,9 +11,7 @@ import {
   Bell,
   Building2,
   CheckCircle2,
-  CircleDollarSign,
   ClipboardList,
-  Clock3,
   FileText,
   ImagePlus,
   LayoutDashboard,
@@ -29,7 +27,6 @@ import {
   Search,
   Settings2,
   ShieldCheck,
-  TrendingUp,
   UserCog,
   Users,
   X,
@@ -37,6 +34,9 @@ import {
 import { UserSettingsView } from "./user-settings-view";
 import { CustomerView } from "./customer-view";
 import { ProjectView } from "./project-view";
+import { ProductView } from "./product-view";
+import { QuotationView } from "./quotation-view";
+import { OverviewView } from "./overview-view";
 import { ThemeToggle } from "@/components/theme-toggle";
 import { NeonStorageWidget } from "@/components/neon-storage-widget";
 import { cn } from "@/lib/utils";
@@ -79,84 +79,6 @@ import {
 } from "@/lib/settings-types";
 import { useTopLoader } from "nextjs-toploader";
 
-const quotes = [
-  {
-    id: "QT-240821",
-    customer: "บริษัท พราวด์ บิลด์ดิ้ง จำกัด",
-    project: "บ้านพักอาศัย 2 ชั้น — บางนา",
-    value: "฿2,480,000",
-    status: "รออนุมัติ",
-    date: "วันนี้, 09:42",
-  },
-  {
-    id: "QT-240820",
-    customer: "คุณณัฐวุฒิ วัฒนานนท์",
-    project: "รีโนเวทสำนักงาน สุขุมวิท 49",
-    value: "฿860,500",
-    status: "ส่งแล้ว",
-    date: "เมื่อวาน, 16:18",
-  },
-  {
-    id: "QT-240819",
-    customer: "บริษัท เอสเค อินทีเรียร์",
-    project: "โชว์รูมเฟอร์นิเจอร์ รัชดา",
-    value: "฿1,725,000",
-    status: "อนุมัติแล้ว",
-    date: "เมื่อวาน, 11:05",
-  },
-  {
-    id: "QT-240818",
-    customer: "คุณศศิธร พัฒนกิจ",
-    project: "ต่อเติมครัวและพื้นที่ซักล้าง",
-    value: "฿328,750",
-    status: "ฉบับร่าง",
-    date: "18 ส.ค. 14:30",
-  },
-];
-
-const stats = [
-  {
-    label: "มูลค่าใบเสนอราคา",
-    value: "฿8,420,500",
-    change: "+18.4%",
-    desc: "เทียบกับเดือนก่อนหน้า",
-    icon: CircleDollarSign,
-    colorClass:
-      "text-emerald-600 bg-emerald-500/10 dark:text-emerald-400 dark:bg-emerald-500/15",
-    trendTone: "positive",
-  },
-  {
-    label: "ใบเสนอราคาทั้งหมด",
-    value: "48 รายการ",
-    change: "+12.0%",
-    desc: "เพิ่มขึ้น 5 รายการจากสัปดาห์ก่อน",
-    icon: FileText,
-    colorClass:
-      "text-blue-600 bg-blue-500/10 dark:text-blue-400 dark:bg-blue-500/15",
-    trendTone: "positive",
-  },
-  {
-    label: "รอการอนุมัติ",
-    value: "12 รายการ",
-    change: "ต้องติดตาม",
-    desc: "มูลค่ารออนุมัติรวม ฿3.2M",
-    icon: Clock3,
-    colorClass:
-      "text-amber-600 bg-amber-500/10 dark:text-amber-400 dark:bg-amber-500/15",
-    trendTone: "warning",
-  },
-  {
-    label: "อัตราปิดการขาย",
-    value: "64.8%",
-    change: "+5.2%",
-    desc: "เป้าหมายประจำปี 60%",
-    icon: TrendingUp,
-    colorClass:
-      "text-purple-600 bg-purple-500/10 dark:text-purple-400 dark:bg-purple-500/15",
-    trendTone: "positive",
-  },
-];
-
 function updateBrowserMetadata(settings: SystemSettingsData) {
   if (typeof document === "undefined") return;
 
@@ -177,49 +99,6 @@ function updateBrowserMetadata(settings: SystemSettingsData) {
       document.head.appendChild(link);
     }
     link.href = settings.iconUrl;
-  }
-}
-
-function renderStatusBadge(status: string) {
-  switch (status) {
-    case "อนุมัติแล้ว":
-      return (
-        <Badge
-          variant="outline"
-          className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:border-emerald-500/30 dark:bg-emerald-500/15 dark:text-emerald-400 gap-1 font-medium text-xs"
-        >
-          <CheckCircle2 className="size-3" />
-          อนุมัติแล้ว
-        </Badge>
-      );
-    case "รออนุมัติ":
-      return (
-        <Badge
-          variant="outline"
-          className="border-amber-500/30 bg-amber-500/10 text-amber-600 dark:border-amber-500/30 dark:bg-amber-500/15 dark:text-amber-400 gap-1 font-medium text-xs"
-        >
-          <Clock3 className="size-3" />
-          รออนุมัติ
-        </Badge>
-      );
-    case "ส่งแล้ว":
-      return (
-        <Badge
-          variant="outline"
-          className="border-blue-500/30 bg-blue-500/10 text-blue-600 dark:border-blue-500/30 dark:bg-blue-500/15 dark:text-blue-400 gap-1 font-medium text-xs"
-        >
-          ส่งแล้ว
-        </Badge>
-      );
-    default:
-      return (
-        <Badge
-          variant="outline"
-          className="border-border bg-muted/60 text-muted-foreground gap-1 font-medium text-xs"
-        >
-          ฉบับร่าง
-        </Badge>
-      );
   }
 }
 
@@ -252,19 +131,20 @@ export function DashboardContent({
   const searchParams = useSearchParams();
   const { enqueueSnackbar } = useSnackbar();
   const rawView = searchParams.get("view");
-  const getInitialView = (): "overview" | "settings" | "user-settings" | "customers" | "projects" => {
+  const getInitialView = (): "overview" | "settings" | "user-settings" | "customers" | "projects" | "products" | "quotes" => {
     if (rawView === "settings") return "settings";
     if (rawView === "user-settings") return "user-settings";
     if (rawView === "customers") return "customers";
     if (rawView === "projects") return "projects";
+    if (rawView === "products") return "products";
+    if (rawView === "quotes") return "quotes";
     return "overview";
   };
   const [activeView, setActiveView] = useState<
-    "overview" | "settings" | "user-settings" | "customers" | "projects"
+    "overview" | "settings" | "user-settings" | "customers" | "projects" | "products" | "quotes"
   >(getInitialView);
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
-  const [range, setRange] = useState("เดือนนี้");
   const [notice, setNotice] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const [isEditingSettings, setIsEditingSettings] = useState(false);
@@ -315,7 +195,11 @@ export function DashboardContent({
               ? "customers"
               : v === "projects"
                 ? "projects"
-                : "overview";
+                : v === "products"
+                  ? "products"
+                  : v === "quotes"
+                    ? "quotes"
+                    : "overview";
       setIsEditingSettings(false);
       setSettingsErrors({});
       setActiveView(target);
@@ -330,7 +214,7 @@ export function DashboardContent({
   }, []);
 
   const handleViewChange = (
-    view: "overview" | "settings" | "user-settings" | "customers" | "projects",
+    view: "overview" | "settings" | "user-settings" | "customers" | "projects" | "products" | "quotes",
   ) => {
     setSidebarOpen(false);
     if (view === activeView) return;
@@ -355,7 +239,9 @@ export function DashboardContent({
             ? "/home?view=customers"
             : view === "projects"
               ? "/home?view=projects"
-              : "/home";
+              : view === "products"
+                ? "/home?view=products"
+                : "/home";
 
     transitionTimer = setTimeout(() => {
       if (view === "settings") {
@@ -535,7 +421,14 @@ export function DashboardContent({
     }, 200);
   };
 
-  const navItems = [
+  const navItems: {
+    id: string;
+    label: string;
+    icon: any;
+    active: boolean;
+    count?: string;
+    onClick: () => void;
+  }[] = [
     {
       id: "overview",
       label: "ภาพรวม",
@@ -547,9 +440,8 @@ export function DashboardContent({
       id: "quotes",
       label: "ใบเสนอราคา",
       icon: FileText,
-      count: "24",
-      active: false,
-      onClick: () => handleMenuClick(() => setNotice(true)),
+      active: activeView === "quotes",
+      onClick: () => handleViewChange("quotes"),
     },
     {
       id: "customers",
@@ -569,8 +461,8 @@ export function DashboardContent({
       id: "products",
       label: "สินค้าและวัสดุ",
       icon: ClipboardList,
-      active: false,
-      onClick: () => handleMenuClick(() => setNotice(true)),
+      active: activeView === "products",
+      onClick: () => handleViewChange("products"),
     },
   ];
 
@@ -930,7 +822,13 @@ export function DashboardContent({
                     ? "ภาพรวมระบบ"
                     : activeView === "settings"
                       ? "การตั้งค่าระบบ"
-                      : "การตั้งค่าผู้ใช้งาน"}
+                      : activeView === "customers"
+                        ? "ข้อมูลลูกค้า"
+                        : activeView === "projects"
+                          ? "ข้อมูลโครงการ"
+                          : activeView === "products"
+                            ? "ข้อมูลสินค้าและวัสดุ"
+                            : "การตั้งค่าผู้ใช้งาน"}
                 </h1>
               </div>
             </div>
@@ -995,383 +893,12 @@ export function DashboardContent({
         </header>
 
         {/* Main Content Body */}
-        <main className="mx-auto w-full max-w-7xl flex-1 px-4 sm:px-6 lg:px-8 py-6 space-y-6">
+        <main className="mx-auto w-full max-w-360 flex-1 px-4 sm:px-6 lg:px-8 py-6 space-y-6">
           {activeView === "overview" ? (
-            <>
-              {/* Welcome and Action Row */}
-              <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-                <div>
-                  <div className="flex items-center gap-2">
-                    <h2 className="text-2xl font-bold tracking-tight text-foreground sm:text-3xl">
-                      สวัสดี, {currentUser?.name || "ยินดีต้อนรับ"} 👋
-                    </h2>
-                  </div>
-                  <p className="mt-1 text-sm text-muted-foreground">
-                    ติดตามภาพรวมงานใบเสนอราคา
-                    และสถานะความคืบหน้าโครงการของคุณวันนี้
-                  </p>
-                </div>
-
-                <div className="flex items-center gap-2.5 shrink-0">
-                  <Select
-                    value={range}
-                    onValueChange={(val) => val && setRange(val)}
-                  >
-                    <SelectTrigger className="w-[125px] h-9 bg-card">
-                      <SelectValue placeholder={range} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="เดือนนี้">เดือนนี้</SelectItem>
-                      <SelectItem value="ไตรมาสนี้">ไตรมาสนี้</SelectItem>
-                      <SelectItem value="ปีนี้">ปีนี้</SelectItem>
-                    </SelectContent>
-                  </Select>
-
-                  <Button
-                    onClick={() => setNotice(true)}
-                    className="h-9 gap-1.5 shadow-sm"
-                  >
-                    <Plus className="size-4" />
-                    <span>สร้างใบเสนอราคา</span>
-                  </Button>
-                </div>
-              </div>
-
-              {/* 4 Stat Cards */}
-              <section className="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-                {stats.map(
-                  ({
-                    label,
-                    value,
-                    change,
-                    desc,
-                    icon: Icon,
-                    colorClass,
-                    trendTone,
-                  }) => (
-                    <Card
-                      key={label}
-                      className="relative overflow-hidden transition-all hover:shadow-sm"
-                    >
-                      <CardContent className="p-5">
-                        <div className="flex items-center justify-between">
-                          <div
-                            className={cn(
-                              "grid size-10 place-items-center rounded-lg",
-                              colorClass,
-                            )}
-                          >
-                            <Icon className="size-5" />
-                          </div>
-                          <Badge
-                            variant="outline"
-                            className={cn(
-                              "font-medium text-xs",
-                              trendTone === "warning"
-                                ? "border-amber-500/30 bg-amber-500/10 text-amber-600 dark:text-amber-400"
-                                : "border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400",
-                            )}
-                          >
-                            {change}
-                          </Badge>
-                        </div>
-                        <div className="mt-4">
-                          <p className="text-xs font-medium text-muted-foreground">
-                            {label}
-                          </p>
-                          <p className="mt-1 text-2xl font-bold tracking-tight text-foreground">
-                            {value}
-                          </p>
-                          <p className="mt-1 text-xs text-muted-foreground/80">
-                            {desc}
-                          </p>
-                        </div>
-                      </CardContent>
-                    </Card>
-                  ),
-                )}
-              </section>
-
-              {/* Analytics Charts Section */}
-              <section className="grid gap-5 lg:grid-cols-7">
-                {/* Area/Line Trend Chart */}
-                <Card className="lg:col-span-4 flex flex-col justify-between">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="text-base font-semibold">
-                          มูลค่าใบเสนอราคา
-                        </CardTitle>
-                        <CardDescription>
-                          แนวโน้มสถิติยอดเสนอราคาย้อนหลัง 6 เดือน
-                        </CardDescription>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="icon-sm"
-                        className="text-muted-foreground"
-                        aria-label="ตัวเลือกกราฟ"
-                      >
-                        <MoreHorizontal className="size-4" />
-                      </Button>
-                    </div>
-                    <div className="mt-3 flex items-baseline gap-2">
-                      <span className="text-2xl font-bold tracking-tight text-foreground">
-                        ฿8,420,500
-                      </span>
-                      <Badge
-                        variant="outline"
-                        className="border-emerald-500/30 bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 text-xs"
-                      >
-                        ↑ 18.4% จากช่วงก่อนหน้า
-                      </Badge>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-2">
-                    <div className="h-[180px] w-full">
-                      <svg
-                        viewBox="0 0 680 180"
-                        className="h-full w-full overflow-visible"
-                        role="img"
-                        aria-label="กราฟมูลค่าใบเสนอราคา"
-                      >
-                        <defs>
-                          <linearGradient
-                            id="quoteAreaGradient"
-                            x1="0"
-                            x2="0"
-                            y1="0"
-                            y2="1"
-                          >
-                            <stop
-                              offset="0%"
-                              stopColor="var(--primary)"
-                              stopOpacity="0.25"
-                            />
-                            <stop
-                              offset="100%"
-                              stopColor="var(--primary)"
-                              stopOpacity="0"
-                            />
-                          </linearGradient>
-                        </defs>
-                        {[25, 65, 105, 145].map((y) => (
-                          <line
-                            key={y}
-                            x1="0"
-                            x2="680"
-                            y1={y}
-                            y2={y}
-                            stroke="currentColor"
-                            strokeDasharray="4 4"
-                            className="text-border/60"
-                            strokeWidth="1"
-                          />
-                        ))}
-                        <path
-                          d="M0 137 C42 133 48 106 95 119 S154 86 196 102 S254 75 300 91 S355 66 401 76 S458 48 502 63 S568 22 610 41 S651 27 680 12 L680 174 L0 174 Z"
-                          fill="url(#quoteAreaGradient)"
-                        />
-                        <path
-                          d="M0 137 C42 133 48 106 95 119 S154 86 196 102 S254 75 300 91 S355 66 401 76 S458 48 502 63 S568 22 610 41 S651 27 680 12"
-                          fill="none"
-                          stroke="var(--primary)"
-                          strokeWidth="2.5"
-                          strokeLinecap="round"
-                        />
-                      </svg>
-                    </div>
-                    <div className="mt-2 flex justify-between text-xs text-muted-foreground px-1">
-                      <span>มี.ค.</span>
-                      <span>เม.ย.</span>
-                      <span>พ.ค.</span>
-                      <span>มิ.ย.</span>
-                      <span>ก.ค.</span>
-                      <span>ส.ค.</span>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                {/* Status Donut Breakdown */}
-                <Card className="lg:col-span-3 flex flex-col justify-between">
-                  <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
-                      <div>
-                        <CardTitle className="text-base font-semibold">
-                          สถานะใบเสนอราคา
-                        </CardTitle>
-                        <CardDescription>
-                          จำแนกตามสถานะปัจจุบันทั้งหมด 48 รายการ
-                        </CardDescription>
-                      </div>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="text-xs text-primary hover:text-primary/80 h-8 px-2"
-                      >
-                        ดูทั้งหมด
-                      </Button>
-                    </div>
-                  </CardHeader>
-                  <CardContent className="pt-2">
-                    <div className="flex flex-col sm:flex-row items-center gap-6 py-2">
-                      {/* Donut Chart with theme-adaptive center */}
-                      <div
-                        className="relative grid size-[146px] shrink-0 place-items-center rounded-full shadow-xs"
-                        style={{
-                          background:
-                            "conic-gradient(#10b981 0 45%, #f59e0b 45% 70%, #3b82f6 70% 86%, #71717a 86% 100%)",
-                        }}
-                      >
-                        <div className="grid size-[104px] place-items-center rounded-full bg-card border border-border/40 shadow-inner">
-                          <div className="text-center">
-                            <p className="text-2xl font-bold tracking-tight text-foreground">
-                              48
-                            </p>
-                            <p className="text-xs text-muted-foreground font-medium">
-                              รายการ
-                            </p>
-                          </div>
-                        </div>
-                      </div>
-
-                      {/* Legend */}
-                      <div className="w-full flex-1 space-y-2.5">
-                        {[
-                          {
-                            label: "อนุมัติแล้ว",
-                            count: "22 รายการ",
-                            pct: "45%",
-                            color: "bg-emerald-500",
-                          },
-                          {
-                            label: "รออนุมัติ",
-                            count: "12 รายการ",
-                            pct: "25%",
-                            color: "bg-amber-500",
-                          },
-                          {
-                            label: "ส่งให้ลูกค้าแล้ว",
-                            count: "8 รายการ",
-                            pct: "16%",
-                            color: "bg-blue-500",
-                          },
-                          {
-                            label: "ฉบับร่าง",
-                            count: "6 รายการ",
-                            pct: "14%",
-                            color: "bg-zinc-400",
-                          },
-                        ].map(({ label, count, pct, color }) => (
-                          <div
-                            key={label}
-                            className="flex items-center justify-between text-xs"
-                          >
-                            <span className="flex items-center gap-2 text-muted-foreground">
-                              <span
-                                className={cn(
-                                  "size-2 rounded-full shrink-0",
-                                  color,
-                                )}
-                              />
-                              <span>{label}</span>
-                            </span>
-                            <div className="flex items-center gap-2">
-                              <span className="font-semibold text-foreground">
-                                {count}
-                              </span>
-                              <span className="text-muted-foreground/70 text-xs">
-                                ({pct})
-                              </span>
-                            </div>
-                          </div>
-                        ))}
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </section>
-
-              {/* Recent Quotations Table */}
-              <section>
-                <Card>
-                  <CardHeader className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                    <div>
-                      <CardTitle className="text-base font-semibold">
-                        ใบเสนอราคาล่าสุด
-                      </CardTitle>
-                      <CardDescription>
-                        รายการที่มีการเคลื่อนไหวหรือแก้ไขล่าสุดในระบบ
-                      </CardDescription>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="text-xs gap-1.5 h-8 w-fit"
-                    >
-                      <span>ดูใบเสนอราคาทั้งหมด</span>
-                      <ArrowUpRight className="size-3.5 text-muted-foreground" />
-                    </Button>
-                  </CardHeader>
-                  <CardContent className="p-0">
-                    <Table>
-                      <TableHeader>
-                        <TableRow className="hover:bg-transparent">
-                          <TableHead className="pl-6 w-[130px]">
-                            เลขที่
-                          </TableHead>
-                          <TableHead>ลูกค้า / โครงการ</TableHead>
-                          <TableHead className="w-[140px]">มูลค่า</TableHead>
-                          <TableHead className="w-[140px]">สถานะ</TableHead>
-                          <TableHead className="w-[160px]">
-                            อัปเดตล่าสุด
-                          </TableHead>
-                          <TableHead className="pr-6 w-[60px] text-right"></TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {quotes.map((quote) => (
-                          <TableRow key={quote.id} className="cursor-pointer">
-                            <TableCell className="pl-6 font-mono font-medium text-primary text-xs">
-                              {quote.id}
-                            </TableCell>
-                            <TableCell>
-                              <div>
-                                <p className="font-medium text-foreground text-sm leading-snug">
-                                  {quote.customer}
-                                </p>
-                                <p className="text-xs text-muted-foreground mt-0.5">
-                                  {quote.project}
-                                </p>
-                              </div>
-                            </TableCell>
-                            <TableCell className="font-semibold text-foreground text-sm">
-                              {quote.value}
-                            </TableCell>
-                            <TableCell>
-                              {renderStatusBadge(quote.status)}
-                            </TableCell>
-                            <TableCell className="text-xs text-muted-foreground">
-                              {quote.date}
-                            </TableCell>
-                            <TableCell className="pr-6 text-right">
-                              <Button
-                                variant="ghost"
-                                size="icon-xs"
-                                className="text-muted-foreground hover:text-foreground"
-                                aria-label={`ตัวเลือก ${quote.id}`}
-                              >
-                                <MoreHorizontal className="size-4" />
-                              </Button>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table>
-                  </CardContent>
-                </Card>
-              </section>
-            </>
+            <OverviewView
+              onNavigateView={handleViewChange}
+              currentUser={currentUser}
+            />
           ) : activeView === "settings" ? (
             /* System Settings View Inside Dashboard Layout */
             <div className="space-y-5">
@@ -1863,6 +1390,13 @@ export function DashboardContent({
               onBack={() => handleViewChange("overview")}
               userRole={session?.user?.role}
             />
+          ) : activeView === "products" ? (
+            <ProductView
+              onBack={() => handleViewChange("overview")}
+              userRole={session?.user?.role}
+            />
+          ) : activeView === "quotes" ? (
+            <QuotationView />
           ) : (
             <UserSettingsView
               onBack={() => handleViewChange("overview")}

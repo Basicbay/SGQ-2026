@@ -551,9 +551,14 @@ export function ProjectView({
         helper.accessor("projectCode", {
           header: "รหัสโครงการ",
           cell: (info) => (
-            <span className="font-mono text-xs font-semibold text-primary px-2 py-0.5 rounded bg-primary/10 whitespace-nowrap">
+            <button
+              type="button"
+              onClick={() => handleOpenView(info.row.original)}
+              className="font-mono text-xs sm:text-sm font-medium text-primary hover:underline cursor-pointer text-left whitespace-nowrap"
+              title="คลิกเพื่อดูรายละเอียดโครงการ"
+            >
               {info.getValue()}
-            </span>
+            </button>
           ),
         }),
         helper.accessor("name", {
@@ -566,9 +571,9 @@ export function ProjectView({
                   {project.name}
                 </span>
                 {project.location && (
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground min-w-0">
-                    <MapPin className="size-3 shrink-0 text-muted-foreground/70" />
-                    <span className="truncate" title={project.location}>
+                 <div className="flex items-start gap-1 min-w-[200px] max-w-[360px]">
+                    <MapPin className="size-3.5 shrink-0 text-muted-foreground/70 mt-0.5" />
+                    <span className=" text-xs text-muted-foreground break-words whitespace-normal leading-snug" title={project.location}>
                       {project.location}
                     </span>
                   </div>
@@ -721,8 +726,14 @@ export function ProjectView({
 
       {/* 2. Main Card: Table & Filter Controls */}
       <Card className="border border-border shadow-xs overflow-hidden">
-        {/* Filter & Search Bar */}
-        <div className="border-b border-border p-4 bg-card">
+        {/* Card Header & Filter/Search Toolbar */}
+        <div className="border-b border-border p-4 sm:p-5 bg-card space-y-4">
+          <div className="flex items-center gap-2.5 w-full justify-between">
+            <h2 className="text-base sm:text-lg font-semibold tracking-tight text-foreground">
+              รายชื่อโครงการในระบบ
+            </h2>
+          </div>
+
           <form
             onSubmit={handleSearch}
             className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between"
@@ -735,8 +746,19 @@ export function ProjectView({
                   placeholder="ค้นหารหัส, ชื่อโครงการ, ทำเล, หรือลูกค้า..."
                   value={search}
                   onChange={(e) => setSearch(e.target.value)}
-                  className="pl-9 h-9 text-sm bg-background"
+                  maxLength={100}
+                  className="pl-9 pr-8 h-9 text-sm bg-background"
                 />
+                {search && (
+                  <button
+                    type="button"
+                    onClick={() => setSearch("")}
+                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-muted-foreground hover:text-foreground p-0.5 rounded-sm"
+                    aria-label="ล้างคำค้นหา"
+                  >
+                    <X className="size-3.5" />
+                  </button>
+                )}
               </div>
 
               {/* Type Filter */}
@@ -1108,7 +1130,7 @@ export function ProjectView({
           )}
 
           <DialogFooter className="gap-2 border-t border-border pt-4 sm:justify-between">
-            <div className="text-[11px] text-muted-foreground flex items-center gap-2">
+            <div className="text-xs text-muted-foreground flex items-center gap-2">
               <span>สร้างเมื่อ: {formatDate(selectedProject?.createdAt)}</span>
             </div>
             <div className="flex items-center gap-2">
@@ -1176,7 +1198,7 @@ export function ProjectView({
                     </label>
                     <Badge
                       variant="outline"
-                      className="text-[10px] px-1.5 py-0 h-4 font-normal border-primary/30 bg-primary/10 text-primary"
+                      className="text-xs px-1.5 py-0 h-5 font-normal border-primary/30 bg-primary/10 text-primary"
                     >
                       สร้างให้อัตโนมัติ
                     </Badge>
@@ -1188,7 +1210,7 @@ export function ProjectView({
                     disabled
                     className="bg-muted/50 text-muted-foreground h-9 text-xs font-mono cursor-not-allowed border-dashed"
                   />
-                  <span className="text-[10px] text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     รหัสจะถูกสร้างตามลำดับ เช่น PRJ-2026-0006
                   </span>
                 </div>

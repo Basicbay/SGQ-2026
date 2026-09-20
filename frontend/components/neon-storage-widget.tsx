@@ -147,7 +147,7 @@ export function NeonStorageWidget({
               <span className="text-xs font-semibold">Neon DB Storage</span>
               <ExternalLink className="size-2.5 text-muted-foreground group-hover:text-foreground transition-colors" />
             </a>
-            <span className="text-[10px] font-mono font-medium px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
+            <span className="text-xs font-mono font-medium px-1.5 py-0.5 rounded-full bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20">
               {stats.usedPercent}% ใช้ไป
             </span>
           </div>
@@ -156,7 +156,7 @@ export function NeonStorageWidget({
             <span className="font-semibold text-foreground">
               {stats.usedPretty}
             </span>
-            <span className="text-muted-foreground text-[11px]">
+            <span className="text-muted-foreground text-xs">
               ทั้งหมด {stats.totalLimitPretty}
             </span>
           </div>
@@ -186,7 +186,7 @@ export function NeonStorageWidget({
           </div>
 
           {/* Legend */}
-          <div className="grid grid-cols-2 gap-x-2 gap-y-1 pt-1 text-[10px] text-muted-foreground">
+          <div className="grid grid-cols-2 gap-x-2 gap-y-1 pt-1 text-xs text-muted-foreground">
             <div className="flex items-center gap-1.5">
               <span className="size-2 rounded-full bg-sky-500 shrink-0" />
               <span className="truncate">
@@ -273,7 +273,7 @@ export function NeonStorageWidget({
             จาก {stats.totalLimitPretty}
           </span>
         </div>
-        <span className="text-[11px] font-mono font-medium text-muted-foreground">
+        <span className="text-xs font-mono font-medium text-muted-foreground">
           {stats.usedPercent}%
         </span>
       </div>
@@ -312,7 +312,7 @@ export function NeonStorageWidget({
       </div>
 
       {/* 4. iPhone Storage Dots Legend */}
-      {/* <div className="grid grid-cols-2 gap-x-2 gap-y-1 pt-0.5 text-[10px] text-muted-foreground select-none">
+      {/* <div className="grid grid-cols-2 gap-x-2 gap-y-1 pt-0.5 text-xs text-muted-foreground select-none">
         <div className="flex items-center gap-1.5 min-w-0" title={`ข้อมูลตาราง: ${stats.breakdown.tableDataPretty}`}>
           <span className="size-2 rounded-full bg-sky-500 shrink-0 shadow-xs" />
           <span className="truncate">ข้อมูล {stats.breakdown.tableDataPretty}</span>
@@ -332,7 +332,7 @@ export function NeonStorageWidget({
       </div> */}
 
       {/* 5. Subtle Footer info: Free space status */}
-      <div className="flex items-center justify-between pt-0.5 border-t border-sidebar-border/50 text-[10px] text-muted-foreground">
+      <div className="flex items-center justify-between pt-0.5 border-t border-sidebar-border/50 text-xs text-muted-foreground">
         <span>เหลือพื้นที่ว่าง</span>
         <span className="font-mono font-medium text-emerald-600 dark:text-emerald-400">
           {stats.freePretty} ({stats.breakdown.freePercent}%)

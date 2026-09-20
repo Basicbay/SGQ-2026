@@ -458,7 +458,7 @@ export function CustomerView({
             <button
               type="button"
               onClick={() => handleOpenView(info.row.original)}
-              className="font-mono text-sm font-medium text-primary hover:underline cursor-pointer text-left"
+              className="font-mono text-xs sm:text-sm font-medium text-primary hover:underline cursor-pointer text-left whitespace-nowrap"
               title="คลิกเพื่อดูรายละเอียดลูกค้า"
             >
               {info.row.original.customerCode}
@@ -483,7 +483,7 @@ export function CustomerView({
                 <div className="flex items-center gap-1.5">
                   <Badge
                     variant="outline"
-                    className="text-[11px] h-5 px-1.5 font-normal border-border/80 text-muted-foreground gap-1"
+                    className="text-xs h-5 px-1.5 font-normal border-border/80 text-muted-foreground gap-1"
                   >
                     {isCompany ? (
                       <>
@@ -1144,7 +1144,7 @@ export function CustomerView({
                     </label>
                     <Badge
                       variant="outline"
-                      className="text-[10px] px-1.5 py-0 h-4 font-normal border-primary/30 bg-primary/10 text-primary"
+                      className="text-xs px-1.5 py-0 h-5 font-normal border-primary/30 bg-primary/10 text-primary"
                     >
                       สร้างให้อัตโนมัติ
                     </Badge>
@@ -1156,7 +1156,7 @@ export function CustomerView({
                     disabled
                     className="bg-muted/50 text-muted-foreground h-9 text-sm font-mono cursor-not-allowed border-dashed"
                   />
-                  <span className="text-[11px] text-muted-foreground">
+                  <span className="text-xs text-muted-foreground">
                     รหัสจะถูกสร้างตามลำดับ เช่น CUST-2026-0006
                   </span>
                 </div>
@@ -1497,7 +1497,7 @@ export function CustomerView({
                     >
                       รหัสลูกค้า (Customer Code)
                     </label>
-                    <span className="text-[11px] text-muted-foreground">
+                    <span className="text-xs text-muted-foreground">
                       ไม่สามารถแก้ไขได้
                     </span>
                   </div>
